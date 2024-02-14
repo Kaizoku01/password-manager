@@ -1,107 +1,72 @@
-from tkinter import *
-from tkinter import messagebox
-from random import choice, randint, shuffle
-import pyperclip
 import customtkinter
-from PIL import Image
-from logo import project_logo
+from button_widget.button_widget import ButtonWidget
+from entry_widget.entry_widget import EntryWidget
+from label_widget.label_widget import LabelWidget
 from logo.project_logo import ProjectLogo
+from methods.generate_password_method import GeneratePassword
+from methods.save_method import SavePassword
+from screen_frame.screen_frame import ScreenFrame
 
+# root object for customTkinter
+root = customtkinter.CTk()
 
-# ---------------------------- PASSWORD GENERATOR ------------------------------- #
-# Password Generator Project
-def generate_password():
-    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-               'v',
-               'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-               'R',
-               'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+# screen frame configuration class
+screen_frame = ScreenFrame(root=root, title="Password Manager")
+screen_frame.show_frame()
 
-    password_letters = [choice(letters) for _ in range(randint(8, 10))]
-    password_symbols = [choice(symbols) for _ in range(randint(2, 4))]
-    password_numbers = [choice(numbers) for _ in range(randint(2, 4))]
+# logo configuration class
+logo_obj = ProjectLogo(image_path="assets/key.png", tkinter_obj=root)
+logo_obj.show_logo()
 
-    password_list = password_letters + password_symbols + password_numbers
+# label widget objects
 
-    shuffle(password_list)
+# website label
+label_obj_website = LabelWidget(root=root, title="Website:", text_color="pink")
+label_obj_website.place_label_grid(row=1, column=0)
 
-    password = "".join(password_list)
+# email label
+label_obj_email = LabelWidget(root=root, title="Email:", text_color="pink")
+label_obj_email.place_label_grid(row=2, column=0)
 
-    password_entry.insert(0, password)
-    pyperclip.copy(password)
+# password label
+label_obj_password = LabelWidget(root=root, title="Password:", text_color="pink")
+label_obj_password.place_label_grid(row=3, column=0)
 
+# entry widget objects
 
-# ---------------------------- SAVE PASSWORD ------------------------------- #
-def save():
-    website = website_entry.cget("text")
-    email = email_entry.cget("text")
-    password = password_entry.cget("text")
+# website entry
+entry_obj_website = EntryWidget(root=root, hint_text="Type website here", width=250)
+website_field = entry_obj_website.make_entry()
+website_field.grid(row=1, column=1)
+website_field.focus()
 
-    if len(website) == 0 or len(password) == 0:
-        messagebox.showinfo(title="Oops", message="Please make sure you have not left any field empty!")
-    else:
-        is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \nEmail: {email}"
-                                                              f"\nPassword: {password} \nIs it ok to save?")
-        if is_ok:
-            with open("data.txt", "a") as data_file:
-                data_file.write(f"{website} | {email} | {password}\n")
-                website_entry.delete(0, END)
-                password_entry.delete(0, END)
+# email entry
+entry_obj_email = EntryWidget(root=root, hint_text="Type email here", width=250)
+email_field = entry_obj_email.make_entry()
+email_field.grid(row=2, column=1)
+email_field.insert(0, "test@gmail.com")
 
+# password entry
+entry_obj_password = EntryWidget(root=root, hint_text="Type password here", width=250)
+password_field = entry_obj_password.make_entry()
+password_field.grid(row=3, column=1)
 
-# ---------------------------- UI SETUP ------------------------------- #
+# Button widget
 
-# window = Tk()
-app = customtkinter.CTk()
-# window.title("Password Manager")
-# window.config(padx=50, pady=50)
-app.geometry("500x500")
-app.title("Password Manager")
-app.config(padx=50, pady=50)
-customtkinter.set_appearance_mode("dark")
-app.configure(background="pink")
+# generate password callback
+generate_password = GeneratePassword(password_field=password_field)
 
-# key_lock_image = "assets/key.png"
-# image = customtkinter.CTkImage(light_image=Image.open(key_lock_image), size=(150, 150))
-# image_label = customtkinter.CTkLabel(app, image=image, text='')
-# image_label.grid(row=0, column=1, sticky=S, ipady=20)
-logo_obj = ProjectLogo()
-logo_obj.showLogo()
+# generate password button
+button_obj_generate_password = ButtonWidget(root=root, title="Generate", on_tap=generate_password.generate)
+gen_pass_button = button_obj_generate_password.make_button()
+gen_pass_button.grid(row=3, column=3, padx=(10, 0))
 
+# save password callback
+save_password = SavePassword(website_field=website_field, email_field=email_field, password_field=password_field)
 
-# labels
-label_font = customtkinter.CTkFont(family="Montserrat", size=14, weight="bold")
-website_label = customtkinter.CTkLabel(app, text="Website:", fg_color="transparent",text_color="teal",font=label_font)
-website_label.grid(row=1, column=0)
-email_label = customtkinter.CTkLabel(app, text="Email:", fg_color="transparent",text_color="teal",font=label_font)
-email_label.grid(row=2, column=0)
-password_label = customtkinter.CTkLabel(app, text="Password:", fg_color="transparent",text_color="teal",font=label_font)
-password_label.grid(row=3, column=0)
+# add button
+button_obj_add = ButtonWidget(root=root, title="Add", on_tap=save_password.save)
+add_button = button_obj_add.make_button()
+add_button.grid(row=4, column=1, columnspan=2, pady=10)
 
-# Entries
-# website_entry = Entry(width=35)
-website_entry = customtkinter.CTkEntry(app, placeholder_text="Type website here",width=250,font=("Noto Sans",12))
-website_entry.grid(row=1, column=1, columnspan=2)
-
-# website_entry.focus()
-
-email_entry = customtkinter.CTkEntry(app, placeholder_text="Type email here",width=250,font=("Noto Sans",12))
-
-email_entry.grid(row=2, column=1, columnspan=2)
-email_entry.insert(0, "test@gmail.com")
-
-password_entry = customtkinter.CTkEntry(app, placeholder_text="Type password here",width=250,font=("Noto Sans",12))
-
-password_entry.grid(row=3, column=1)
-
-# Buttons
-button_text_font = customtkinter.CTkFont(family="Noto Sans", size=14, weight="bold")
-generate_password_button = customtkinter.CTkButton(app, text="Generate", command=generate_password, corner_radius=12, width=50, font=button_text_font)
-# generate_password_button = Button(text="Generate Password", command=generate_password)
-generate_password_button.grid(row=3, column=3)
-add_button = customtkinter.CTkButton(app, text="Add", command=save, corner_radius=12, font=button_text_font)
-add_button.grid(row=4, column=1, columnspan=2)
-
-app.mainloop()
+root.mainloop()
