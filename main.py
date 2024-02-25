@@ -5,6 +5,7 @@ from label_widget.label_widget import LabelWidget
 from logo.project_logo import ProjectLogo
 from methods.generate_password_method import GeneratePassword
 from methods.save_method import SavePassword
+from methods.search_password import SearchPassword
 from screen_frame.screen_frame import ScreenFrame
 
 # root object for customTkinter
@@ -38,7 +39,6 @@ label_obj_password.place_label_grid(row=3, column=0)
 entry_obj_website = EntryWidget(root=root, hint_text="Type website here", width=250)
 website_field = entry_obj_website.make_entry()
 website_field.grid(row=1, column=1)
-website_field.focus()
 
 # email entry
 entry_obj_email = EntryWidget(root=root, hint_text="Type email here", width=250)
@@ -51,7 +51,20 @@ entry_obj_password = EntryWidget(root=root, hint_text="Type password here", widt
 password_field = entry_obj_password.make_entry()
 password_field.grid(row=3, column=1)
 
+
 # Button widget
+
+# search password callback
+def on_tap_wrapper():
+    print(f"new {website_field}")
+    search_password = SearchPassword(website_field=website_field)
+    search_password.search_pass()
+
+
+# search password button
+button_obj_search_password = ButtonWidget(root=root, title="Search", on_tap=on_tap_wrapper)
+search_pass_button = button_obj_search_password.make_button()
+search_pass_button.grid(row=1, column=3, padx=(10, 0))
 
 # generate password callback
 generate_password = GeneratePassword(password_field=password_field)
