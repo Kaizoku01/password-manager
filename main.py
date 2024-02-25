@@ -55,14 +55,10 @@ password_field.grid(row=3, column=1)
 # Button widget
 
 # search password callback
-def on_tap_wrapper():
-    print(f"new {website_field}")
-    search_password = SearchPassword(website_field=website_field)
-    search_password.search_pass()
-
+search_password = SearchPassword(website_field=website_field)
 
 # search password button
-button_obj_search_password = ButtonWidget(root=root, title="Search", on_tap=on_tap_wrapper)
+button_obj_search_password = ButtonWidget(root=root, title="Search", on_tap=search_password.search_pass)
 search_pass_button = button_obj_search_password.make_button()
 search_pass_button.grid(row=1, column=3, padx=(10, 0))
 
